@@ -1,24 +1,36 @@
 import sys
 import datetime
 
-def get_pairedend_read_id(read_id):
-	"""
-	Function : Given either a forward read or reverse read identifier, returns the corresponding paired-end read identifier.
-	Args     : read_id - str. forward read or reverse read identifier. This should be the entire title line of a FASTQ record.
-	Returns  : str. The pairend-end read identifier (title line). 
-	Example  : Setting read_id to "@COOPER:74:HFTH3BBXX:3:1101:29894:1033 1:N:0:NATGAATC+NGATCTCG" will return 
-						     @COOPER:74:HFTH3BBXX:3:1101:29894:1033 2:N:0:NATGAATC+NGATCTCG
-	"""
-	part1, part2 = read_id.strip().split()
-	if part2.startswith("1"):
-		part2 = part2.replace("1","2",1)
-	elif part2.startswith("2"):
-		part2 = part2.replace("2","1",1)
-	else:
-		raise Exception("Unknown read number in {title}".format(title=read_id))
-	return part1 + " " + part2
 
-class FastqParse():
+
+class _FastqParseIter:
+	def __init__(self,fastqparse_i):
+		self.idx = -1
+		self.fpi = fastqparse_i
+		self.seqids = self.fpi.lookup.keys()
+		self.len_seqids = len(self.seqids)
+
+	def next(self):	
+		self.idx += 1
+		if self.idx == self.len_seqids:
+			raise StopIteration
+		seqid_hashval = self.seqids[self.idx]
+		seqid_idx = self.fpi.lookup[seqid_hashval]
+		return self.fpi._formatRecord(self.fpi.data[seqid_idx])
+
+
+class FastqParse:
+
+	SEQID_KEY = "seqid"
+	SEQ_KEY = "seq"
+	QUAL_KEY = "qual"
+
+	#SEQID_IDX, SEQ_IDX, and QUAL_IDX store the index position of the read ID, sequence string, and quality string, respectively,
+	# of a given sublist in the list self.data.
+	SEQID_IDX = 0 
+	SEQ_IDX = 1
+	QUAL_IDX = 2
+
 	def __init__(self,fastq,log=sys.stdout,extract_barcodes=[]):
 		"""
 		Function : Parses the records in an Illumina FASTQ file and stores all records or only those having specific barcodes.
@@ -39,7 +51,30 @@ class FastqParse():
 		self.log = log
 		self._parse() #sets self.data
 									#sets self.lookup.
-	#@classmethod #used for when using memory_profiler.
+
+	def __iter__(self):
+		return _FastqParseIter(self)
+
+	@classmethod
+	def get_pairedend_read_id(cls,read_id):
+		"""
+		Function : Given either a forward read or reverse read identifier, returns the corresponding paired-end read identifier.
+		Args     : read_id - str. forward read or reverse read identifier. This should be the entire title line of a FASTQ record,
+												 minus any trailing whitespace.
+		Returns  : str. The pairend-end read identifier (title line). 
+		Example  : Setting read_id to "@COOPER:74:HFTH3BBXX:3:1101:29894:1033 1:N:0:NATGAATC+NGATCTCG" will return 
+							     @COOPER:74:HFTH3BBXX:3:1101:29894:1033 2:N:0:NATGAATC+NGATCTCG
+		"""
+		part1, part2 = read_id.strip().split()
+		if part2.startswith("1"):
+			part2 = part2.replace("1","2",1)
+		elif part2.startswith("2"):
+			part2 = part2.replace("2","1",1)
+		else:
+			raise Exception("Unknown read number in {title}".format(title=read_id))
+		return part1 + " " + part2
+
+	@classmethod #used for when using memory_profiler.
 	def parseIlluminaFastqAttLine(cls,attLine):
 		#Illumina FASTQ Att line format (as of CASAVA 1.8 at least):
 		#  @<instrument-name>:<run ID>:<flowcell ID>:<lane>:<tile>:<x-pos>:<y-pos> <read number>:<is filtered>:<control number>:<barcode sequence>
@@ -60,7 +95,7 @@ class FastqParse():
 		dico["barcode"] = header[9]
 		return dico	
 
-	@profile
+	#@profile
 	def _parse(self):
 		self.log.write("Parsing " + self.fastqFile + "\n")
 		self.log.flush()
@@ -97,4 +132,36 @@ class FastqParse():
 		fh.close()
 		self.log.write("Finished parsing " + self.fastqFile + "\n")
 		self.log.flush()
+
+	def getRecord(self,title_line):
+		rec = self.data[self.lookup[hash(title_line)]]
+		return self._formatRecord(rec)
+
+	def _formatRecord(self,rec):
+		"""
+		Args : rec - A sublist from self.data.
+		"""
+		return { FastqParse.SEQID_KEY: rec[FastqParse.SEQID_IDX], FastqParse.SEQ_KEY: rec[FastqParse.SEQ_IDX], FastqParse.QUAL_KEY: rec[FastqParse.QUAL_IDX] }
+
+	def getFormattedRecord(self,title_line):
+		rec = self.data[self.lookup[hash(title_line)]]
+		return "\n".join([rec[FastqParse.SEQID_IDX],rec[FastqParse.SEQ_IDX],"+",rec[FastqParse.QUAL_IDX]])
+	
 #Total number of lines in SCGPM_MD-DNA-1_HFTH3_L3_unmatched_R1.fastq is 347,060,820.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
