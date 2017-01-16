@@ -12,7 +12,7 @@ import sys
 import datetime
 from argparse import ArgumentParser
 
-from gbsc_utils.illumina import Illumina
+from illumina_fastq_parse import FastqParse
 
 description ="Extracts the FASTQ records with the given barcodes from a FASTQ file or a pair of FASTQ files. The extracted records are written to a new pair of FASTQ files per barcode specified. Alternatively, the extracted barcodes for a pair of FASTQ files can be interleaved into a new file per barcode."
 
@@ -53,12 +53,12 @@ start_time = datetime.datetime.now()
 
 print("Parsing R1 FASTQ file")
 sys.stdout.flush()
-r1_records = Illumina.FastqParse(fastq=r1_file,extract_barcodes=barcodes)
+r1_records = FastqParse(fastq=r1_file,extract_barcodes=barcodes)
 r2_records = {}
 if r2_file:
 	print("Parsing R2 FASTQ file")
 	sys.stdout.flush()
-	r2_records = Illumina.FastqParse(fastq=r2_file,extract_barcodes=barcodes)
+	r2_records = FastqParse(fastq=r2_file,extract_barcodes=barcodes)
 print("Finished parsing FASTQ file(s).")
 sys.stdout.flush()
 
@@ -78,31 +78,23 @@ output_barcode_counts = {}
 for barcode in barcodes:
 	output_barcode_counts[barcode] = 0
 
-def format_rec_for_output(rec_id,rec):
-	"""
-	Args    : rec_id - str. The title line of an Illumina FASTQ record.
-					  rec - two-item list of [seq,qual].
-	Returns : str. 
-	"""
-	return "\n".join([rec_id,rec[0],"+",rec[1]]) + "\n"
-
-for rec_id,index in r1_records.lookup.iteritems():
-	record = r1_records.data[index] #a list of [seq,qual]
-	header = Illumina.FastqParse.parseIlluminaFastqAttLine(rec_id)
+for record in r1_records: #record is a dict.
+	rec_id = record[FastqParse.SEQID_KEY]
+	header = FastqParse.parseIlluminaFastqAttLine(rec_id)
 	barcode = header["barcode"]
 		
 	if r2_records:
-		rec_2_id = Illumina.get_pairedend_read_id(read_id=rec_id)
+		rec_2_id = FastqParse.get_pairedend_read_id(read_id=rec_id)
 		try:
-			record_2 = r2_records.data[r2_records.lookup[rec_2_id]]
+			record_2 = r2_records.getRecord(rec_2_id)
 		except KeyError:
 			print("Warning: Found foward read {rec_id} but not reverse read {rec_2_id}. Skipping".format(rec_id=rec_id,rec_2_id=rec_2_id))
 			continue
-	file_handles[barcode][R1].write(format_rec_for_output(rec_id,record))
+	file_handles[barcode][R1].write(FastqParse.formatRecordForOutput(record))
 	if r2_records and interleave:
-		file_handles[barcode][R1].write(format_rec_for_output(rec_2_id,record_2))	
+		file_handles[barcode][R1].write(FastqParse.formatRecordForOutput(record_2))
 	elif r2_records:
-		file_handles[barcode][R2].write(format_rec_for_output(rec_2_id,record_2))	
+		file_handles[barcode][R2].write(FastqParse.formatRecordForOutput(record_2))
 	output_barcode_counts[barcode] += 1
 	
 for barcode in file_handles:
