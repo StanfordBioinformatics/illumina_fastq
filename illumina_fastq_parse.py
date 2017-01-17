@@ -78,7 +78,7 @@ class FastqParse:
 	def formatRecordForOutput(cls,record):
 		return "\n".join([record[FastqParse.SEQID_IDX],record[FastqParse.SEQ_IDX],"+",record[FastqParse.QUAL_IDX]])
 
-	@classmethod #used for when using memory_profiler.
+	@classmethod 
 	def parseIlluminaFastqAttLine(cls,attLine):
 		#Illumina FASTQ Att line format (as of CASAVA 1.8 at least):
 		#  @<instrument-name>:<run ID>:<flowcell ID>:<lane>:<tile>:<x-pos>:<y-pos> <read number>:<is filtered>:<control number>:<barcode sequence>
@@ -99,7 +99,7 @@ class FastqParse:
 		dico["barcode"] = header[9]
 		return dico	
 
-	#@profile
+	@profile
 	def _parse(self):
 		self.log.write("Parsing " + self.fastqFile + "\n")
 		self.log.flush()
@@ -150,18 +150,5 @@ class FastqParse:
 #Total number of lines in SCGPM_MD-DNA-1_HFTH3_L3_unmatched_R1.fastq is 347,060,820.
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+if __name__ == "__main__":
+  FastqParse(sys.argv[1])
