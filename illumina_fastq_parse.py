@@ -74,6 +74,10 @@ class FastqParse:
 			raise Exception("Unknown read number in {title}".format(title=read_id))
 		return part1 + " " + part2
 
+	@classmethod
+	def formatRecordForOutput(cls,record):
+		return "\n".join([record[FastqParse.SEQID_IDX],record[FastqParse.SEQ_IDX],"+",record[FastqParse.QUAL_IDX]])
+
 	@classmethod #used for when using memory_profiler.
 	def parseIlluminaFastqAttLine(cls,attLine):
 		#Illumina FASTQ Att line format (as of CASAVA 1.8 at least):
@@ -142,10 +146,6 @@ class FastqParse:
 		Args : rec - A sublist from self.data.
 		"""
 		return { FastqParse.SEQID_KEY: rec[FastqParse.SEQID_IDX], FastqParse.SEQ_KEY: rec[FastqParse.SEQ_IDX], FastqParse.QUAL_KEY: rec[FastqParse.QUAL_IDX] }
-
-	def getFormattedRecord(self,title_line):
-		rec = self.data[self.lookup[hash(title_line)]]
-		return "\n".join([rec[FastqParse.SEQID_IDX],rec[FastqParse.SEQ_IDX],"+",rec[FastqParse.QUAL_IDX]])
 	
 #Total number of lines in SCGPM_MD-DNA-1_HFTH3_L3_unmatched_R1.fastq is 347,060,820.
 
