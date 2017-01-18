@@ -76,7 +76,7 @@ class FastqParse:
 
 	@classmethod
 	def formatRecordForOutput(cls,record):
-		return "\n".join([record[FastqParse.SEQID_IDX],record[FastqParse.SEQ_IDX],"+",record[FastqParse.QUAL_IDX]])
+		return "\n".join([record[FastqParse.SEQID_KEY],record[FastqParse.SEQ_KEY],"+",record[FastqParse.QUAL_KEY]]) + "\n"
 
 	@classmethod 
 	def parseIlluminaFastqAttLine(cls,attLine):
@@ -99,7 +99,7 @@ class FastqParse:
 		dico["barcode"] = header[9]
 		return dico	
 
-	@profile
+	#@profile #used for memory_profiler
 	def _parse(self):
 		self.log.write("Parsing " + self.fastqFile + "\n")
 		self.log.flush()

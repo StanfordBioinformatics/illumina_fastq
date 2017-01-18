@@ -12,7 +12,7 @@ import sys
 import datetime
 from argparse import ArgumentParser
 
-from illumina_fastq_parse import FastqParse
+from illumina_fastq.illumina_fastq_parse import FastqParse
 
 description ="Extracts the FASTQ records with the given barcodes from a FASTQ file or a pair of FASTQ files. The extracted records are written to a new pair of FASTQ files per barcode specified. Alternatively, the extracted barcodes for a pair of FASTQ files can be interleaved into a new file per barcode."
 
@@ -78,6 +78,9 @@ output_barcode_counts = {}
 for barcode in barcodes:
 	output_barcode_counts[barcode] = 0
 
+print("Extracting barcodes of interest")
+sys.stdout.flush()
+
 for record in r1_records: #record is a dict.
 	rec_id = record[FastqParse.SEQID_KEY]
 	header = FastqParse.parseIlluminaFastqAttLine(rec_id)
@@ -103,11 +106,13 @@ for barcode in file_handles:
 
 end_time = datetime.datetime.now()
 print("\n")
+sys.stdout.flush()
 print("Elapsed time: {time}\n".format(time=str(end_time - start_time)))
+sys.stdout.flush()
 print("Output Statistics")
+sys.stdout.flush()
 for barcode in output_barcode_counts:
 	print(barcode + ": " + str(output_barcode_counts[barcode]))
 print("\n")
 sys.stdout.flush()
-
 
