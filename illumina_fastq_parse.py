@@ -1,5 +1,6 @@
 import sys
 import datetime
+import gzip
 
 
 
@@ -41,7 +42,7 @@ class FastqParse:
 																		{ "seqid_x": index_x, "seqid_y": index_y, ... }
 							 where an index gives the position in the list of the record with the given sequence ID. The sequence ID is stored
 							 as the entire title line of a FASTQ record.
-		Args     : fastq - The FASTQ file to be parsed.
+		Args     : fastq - The FASTQ file to be parsed. Accepts uncompressed or gzip compressed with a .gz extension.
 							 log - file handle for logging. Defaults to sys.stdout.
 							 extract_barcodes - list of one or more barcodes to extract from the FASTQ file. If the barcode is duel-indexed, separate
 							     them with a '+', i.e. 'ATCGGT+GCAGCT', as this is how it is written in the FASTQ file. 
@@ -103,7 +104,11 @@ class FastqParse:
 	def _parse(self):
 		self.log.write("Parsing " + self.fastqFile + "\n")
 		self.log.flush()
-		fh = open(self.fastqFile,'r')
+		fastqFileExt = os.path.splitext(self.fastqFile)[-1]
+		if fastqFileExt == ".gz":
+			fh = gzip.open(self.fastqFile)
+		else:	
+			fh = open(self.fastqFile)
 		self.data = []
 		self.lookup = {}
 		count = 0
