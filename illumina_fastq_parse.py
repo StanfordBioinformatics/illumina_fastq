@@ -1,4 +1,12 @@
+
+###
+#Nathaniel Watson
+#nathankw@stanford.edu
+#Created Jan, 2017
+###
+
 import sys
+import os
 import datetime
 import gzip
 
