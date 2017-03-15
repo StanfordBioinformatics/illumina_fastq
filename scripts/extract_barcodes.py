@@ -29,6 +29,7 @@ R1 = "R1"
 R2 = "R2"
 
 args = parser.parse_args()
+barcodes = args.barcodes
 r1_file = args.r1
 r2_file = args.r2
 outdir = args.outdir
@@ -39,7 +40,7 @@ else:
 		raise Exception("The path {path} passed to --outdir does not exist!".format(path=outdir))
 
 outfile_prefix = args.outfile_prefix
-barcodes = [x.replace("-","+") for x in args.barcodes] 
+barcodes = [x.replace("-","+") for x in barcodes] 
 #In the title line of Illumina FASTQ records, a duel-indexed barcode is separated with a '+', i.e. ATC+CGA.
 
 interleave = args.interleave
