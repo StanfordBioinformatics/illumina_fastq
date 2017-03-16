@@ -14,7 +14,7 @@ from argparse import ArgumentParser
 
 from illumina_fastq.illumina_fastq_parse import FastqParse
 
-description ="Extracts the FASTQ records with the given barcodes from a FASTQ file or a pair of FASTQ files. The extracted records are written to a new pair of FASTQ files per barcode specified. Alternatively, the extracted barcodes for a pair of FASTQ files can be interleaved into a new file per barcode."
+description ="Extracts the FASTQ records with the given barcodes from a FASTQ file or a pair of FASTQ files. The extracted records are written to a new pair of FASTQ files per barcode specified. Alternatively, the extracted barcodes for a pair of FASTQ files can be interleaved into a new file per barcode. If paired-end and one of the reads in a pair that matches a given barcode isn't present in the unmatched reads, then neither read of the pair will be output."
 
 parser = ArgumentParser(description=description)
 parser.add_argument("--r1",required=True,help="FASTQ file containing the (forward) reads.")
