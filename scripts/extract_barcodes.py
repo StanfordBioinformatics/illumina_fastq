@@ -22,7 +22,7 @@ parser.add_argument("--r2",help="FASTQ file containing the reverse reads.")
 parser.add_argument("--outdir",help="The pre-existing directory to output the FASTQ files containing the extracted barcodes. Defaults to the current working directory.")
 parser.add_argument("--outfile-prefix",required=True,help="The file prefix of each output FASTQ file for a given barcode. The barcode name will be appended to this prefix, as well as the read number (if --interleaved is not specified). For example, setting the outfile prefix to 'output' would result in the partially formed prefix 'output_${barcode}.fastq' if --interleaved is specified, and 'output_${barcode}_R1.fastq' and 'output_${barcode}_R2.fastq' if --interleaved is not set. The output R2 FASTQ file will of course only be present if both --r1 and --r2 were set.")
 parser.add_argument("-b","--barcodes",nargs="+",help="One or more barcodes to extract from the input FASTQ file(s).")
-parser.add_argument("-i","--interleave",action="store_true",help="If paired-end sequencing and thus both --r1 and --r2 are specified, then adding this option indicates to output a single, interleaved FASTQ file per extracted barcode rather than separate FASTQ fies.")
+parser.add_argument("-i","--interleave",action="store_true",help="If paired-end sequencing and thus both --r1 and --r2 are specified, then adding this option indicates to output a single, interleaved FASTQ file per extracted barcode rather than separate FASTQ files.")
 
 FASTQ_EXT =  ".fastq"
 R1 = "R1"
