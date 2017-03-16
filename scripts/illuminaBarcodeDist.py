@@ -19,7 +19,7 @@ import gzip
 #conf = confParse.Parse(config)
 #pubDir = conf.getValue("illuminaPublished")
 
-def barcodeHist(fqFile,outfile):
+def barcodeHist(fqFile,outfile,sample_size):
 	if fqfile.endswith(".gz"):
 		fh = gzip.open(fqFile,'r')
 	else:
@@ -28,13 +28,17 @@ def barcodeHist(fqFile,outfile):
 	outputHeader = ["Barcode","Freq","Relative_Freq%"]
 	bcDico = {}
 	count = 0
+	record_count = 0
 	for line in fh:
+		if record_count > sample_size:
+			break
 		line = str(line) #is a bytes object if opened with gzip in Python3
 		line = line.strip()
 		if not line:
 			continue
 		count += 1
 		if count == 4:
+			record_count += 1
 			count = 0
 			continue
 		if count in [2,3]:
@@ -57,6 +61,7 @@ description="Given the full path to a run name, tabulates the frequencies at whi
 parser = argparse.ArgumentParser(description=description)
 parser.add_argument('-i','--infile',required=True,help="Input FASTQ file.")
 parser.add_argument('-o','--outfile',help="Output file with barcode histogram. Default is --infile name with the added extension '_barcodeHist.txt'.")
+parser.add_argument("-s","--sample-size",type=int,default=50000,help="The number of reads to use to create the distribution, taken from the start of the file. Default is %(default)s.")
 parser.add_argument('-v','--version',action="version",version='%(prog)s 0.2')
 args = parser.parse_args()
 
@@ -64,6 +69,7 @@ fqfile = args.infile
 outfile = args.outfile
 if not outfile:
 	outfile = fqfile + "_barcodeHist.txt"
+sample_size = args.sample_size
 
-barcodeHist(fqfile,outfile)
+barcodeHist(fqfile,outfile,sample_size)
 
