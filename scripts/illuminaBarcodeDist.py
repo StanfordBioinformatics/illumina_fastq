@@ -61,7 +61,7 @@ description="Given the full path to a run name, tabulates the frequencies at whi
 parser = argparse.ArgumentParser(description=description)
 parser.add_argument('-i','--infile',required=True,help="Input FASTQ file.")
 parser.add_argument('-o','--outfile',help="Output file with barcode histogram. Default is --infile name with the added extension '_barcodeHist.txt'.")
-parser.add_argument("-s","--sample-size",type=int,default=50000,help="The number of reads to use to create the distribution, taken from the start of the file. Default is %(default)s.")
+parser.add_argument("-s","--sample-size",type=int,default=100000,help="The number of reads to use to create the distribution, taken from the start of the file. Default is %(default)s.")
 parser.add_argument('-v','--version',action="version",version='%(prog)s 0.2')
 args = parser.parse_args()
 
