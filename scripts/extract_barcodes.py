@@ -10,11 +10,12 @@
 import os
 import sys
 import datetime
+import gzip
 from argparse import ArgumentParser
 
 from illumina_fastq.illumina_fastq_parse import FastqParse
 
-description ="Extracts the FASTQ records with the given barcodes from a FASTQ file or a pair of FASTQ files. The extracted records are written to a new pair of FASTQ files per barcode specified. Alternatively, the extracted barcodes for a pair of FASTQ files can be interleaved into a new file per barcode. If paired-end and one of the reads in a pair that matches a given barcode isn't present in the unmatched reads, then neither read of the pair will be output."
+description ="Extracts FASTQ records matching the specified barcodes from  the unmatched read FASTQ file or pair of FASTQ files if paired-end sequencing. For each specified barcode, records matching the barcode will be written to a new FASTQ file, or pair of FASTQ files if paired-end sequencing (unless the --interleaved option is set in which case a single FASTQ file is output per extracted barcode). All output files are compressed with gzip. If paired-end and one of the reads in a pair that matches a given barcode isn't present in the unmatched reads, then neither read of the pair will be output."
 
 parser = ArgumentParser(description=description)
 parser.add_argument("--r1",required=True,help="FASTQ file containing the (forward) reads.")
@@ -25,6 +26,7 @@ parser.add_argument("-b","--barcodes",nargs="+",help="One or more barcodes to ex
 parser.add_argument("-i","--interleave",action="store_true",help="If paired-end sequencing and thus both --r1 and --r2 are specified, then adding this option indicates to output a single, interleaved FASTQ file per extracted barcode rather than separate FASTQ files.")
 
 FASTQ_EXT =  ".fastq"
+GZIP_EXT = ".gz"
 R1 = "R1"
 R2 = "R2"
 
@@ -68,12 +70,12 @@ for barcode in barcodes:
 	file_handles[barcode] = {}
 	outfile_name = os.path.join(outdir,outfile_prefix + "_" + barcode.replace("+","-"))
 	if interleave:
-		outfile_name += FASTQ_EXT
+		outfile_name += FASTQ_EXT + GZIP_EXT
 	else:
-		outfile_name += "_" + R1 + FASTQ_EXT
-	file_handles[barcode][R1] = open(outfile_name,"w")
+		outfile_name += "_" + R1 + FASTQ_EXT + GZIP_EXT
+	file_handles[barcode][R1] = gzip.open(outfile_name,"wb")
 	if not interleave and r2_records:
-		file_handles[barcode][R2] = open(outfile_name.replace(R1,R2),"w")
+		file_handles[barcode][R2] = gzip.open(outfile_name.replace(R1,R2),"wb")
 
 output_barcode_counts = {}
 for barcode in barcodes:
