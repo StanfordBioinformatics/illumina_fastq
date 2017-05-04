@@ -30,7 +30,7 @@ def barcodeHist(fqFile,outfile,sample_size):
 	count = 0
 	record_count = 0
 	for line in fh:
-		if record_count > sample_size:
+		if record_count >= sample_size:
 			break
 		line = str(line) #is a bytes object if opened with gzip in Python3
 		line = line.strip()
@@ -51,10 +51,10 @@ def barcodeHist(fqFile,outfile,sample_size):
 	numRecs = float(sum(bcDico.values()))
 
 	fout.write("\t".join(outputHeader) + "\n")
+	fout.write("\nTotal number of records sampled: {0}\n".format(numRecs))
 	for index,cnt in sorted(bcDico.items(),key=operator.itemgetter(1),reverse=True):
 		perc = cnt/numRecs
 		fout.write("{index}\t{cnt}\t{perc:.2%}\n".format(index=index,cnt=cnt,perc=perc))
-	fout.write("\nTotal number of records: {0}\n".format(numRecs))
 	fout.close()
 
 description="Given the full path to a run name, tabulates the frequencies at which each barcode in the Illumina Unmatched FASTQ files (from demultiplexing) are present. The first line of a FASTQ record) must be formatted as @<instrument>:<run number>:<flowcell ID>:<lane>:<tile>:<x-pos>:<y-pos> <read>:<is filtered>:<control number>:<index sequence>."
