@@ -50,8 +50,9 @@ def barcodeHist(fqFile,outfile,sample_size):
 	fh.close()
 	numRecs = float(sum(bcDico.values()))
 
+	fout.write("\nTotal number of records sampled: {0}\n".format(int(numRecs)))
+	fout.write("\n")
 	fout.write("\t".join(outputHeader) + "\n")
-	fout.write("\nTotal number of records sampled: {0}\n".format(numRecs))
 	for index,cnt in sorted(bcDico.items(),key=operator.itemgetter(1),reverse=True):
 		perc = cnt/numRecs
 		fout.write("{index}\t{cnt}\t{perc:.2%}\n".format(index=index,cnt=cnt,perc=perc))
