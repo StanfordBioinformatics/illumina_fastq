@@ -11,6 +11,7 @@ import os
 import sys
 import datetime
 import gzip
+import subprocess
 from argparse import ArgumentParser
 
 from illumina_fastq.illumina_fastq_parse import FastqParse
@@ -26,7 +27,6 @@ parser.add_argument("-b","--barcodes",nargs="+",help="One or more barcodes to ex
 parser.add_argument("-i","--interleave",action="store_true",help="If paired-end sequencing and thus both --r1 and --r2 are specified, then adding this option indicates to output a single, interleaved FASTQ file per extracted barcode rather than separate FASTQ files.")
 
 FASTQ_EXT =  ".fastq"
-GZIP_EXT = ".gz"
 R1 = "R1"
 R2 = "R2"
 
@@ -70,12 +70,12 @@ for barcode in barcodes:
 	file_handles[barcode] = {}
 	outfile_name = os.path.join(outdir,outfile_prefix + "_" + barcode.replace("+","-"))
 	if interleave:
-		outfile_name += FASTQ_EXT + GZIP_EXT
+		outfile_name += FASTQ_EXT
 	else:
-		outfile_name += "_" + R1 + FASTQ_EXT + GZIP_EXT
-	file_handles[barcode][R1] = gzip.open(outfile_name,"wb")
+		outfile_name += "_" + R1 + FASTQ_EXT
+	file_handles[barcode][R1] = open(outfile_name,"w")
 	if not interleave and r2_records:
-		file_handles[barcode][R2] = gzip.open(outfile_name.replace(R1,R2),"wb")
+		file_handles[barcode][R2] = open(outfile_name.replace(R1,R2),"w")
 
 output_barcode_counts = {}
 for barcode in barcodes:
@@ -103,9 +103,16 @@ for record in r1_records: #record is a dict.
 		file_handles[barcode][R2].write(FastqParse.formatRecordForOutput(record_2))
 	output_barcode_counts[barcode] += 1
 	
+
+to_compress = []
 for barcode in file_handles:
 	for output_key in file_handles[barcode]:
-		file_handles[barcode][output_key].close()
+		handle = file_handles[barcode][output_key]
+		handle.close()
+		if os.stat(handle.name).st_size == 0:
+			os.remove(handle.name)
+		else:
+			to_compress.append(handle.name)
 
 end_time = datetime.datetime.now()
 print("\n")
@@ -119,3 +126,14 @@ for barcode in output_barcode_counts:
 print("\n")
 sys.stdout.flush()
 
+print("Compressing output files with gzip")
+sys.stdout.flush()
+for i in to_compress:
+	cmd = "gzip {i}".format(i=i)
+	print("Compressing {i} with command '{cmd}'.".format(i=i,cmd=cmd))
+	sys.stdout.flush()
+	popen = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+	stdout,stderr = popen.communicate()
+	retcode = popen.returncode
+	if retcode:
+		raise Exception("Failed to compress {i}. Stderr is '{stderr}'.".format(i=i,stderr=stderr))	
