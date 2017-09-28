@@ -174,7 +174,8 @@ class FastqParse:
 		rec = self.data[self.lookup[hash(title_line)]]
 		return self._formatRecord(rec)
 
-	def isForwardRead(self,seqid):
+	@classmethod
+	def isForwardRead(cls,seqid):
 		if seqid.split()[1].startswith("1"):
 			return True
 		return False
