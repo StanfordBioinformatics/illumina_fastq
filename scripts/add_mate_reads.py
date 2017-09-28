@@ -42,18 +42,20 @@ r2 = FastqParse(r2_file)
 fout_f = open(args.outfile_f,'w')
 fout_r = open(args.outfile_r,'w')
 
+ids_seen = []
 for rec in query:
 	seqid = rec[FastqParse.SEQID_KEY]
 	mateid = query.get_pairedend_read_id(seqid)
-  #check if mate is already in the query file
-	if query[mateid]:
+	if (seqid in ids_seen) or (mateid in ids_seen):
 		continue
-	if query.isForwardRead(seqid):
+  #check if mate is already in the query file
+	if FastqParse.isForwardRead(seqid):
 		query.printRecord(seqid,fout_f)
 		r2.printRecord(mateid,fout_r)
 	else:
 		query.printRecord(seqid,fout_r)
 		r1.printRecord(mateid,fout_f)
+	ids_seen.extend([seqid,mateid])
 
 fout_f.close()
 fout_r.close()
