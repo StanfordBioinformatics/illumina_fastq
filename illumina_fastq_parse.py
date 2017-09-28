@@ -9,6 +9,7 @@ import sys
 import os
 import datetime
 import gzip
+from memory_profiler import profile
 
 
 
@@ -43,13 +44,21 @@ class FastqParse:
 	def __init__(self,fastq,log=sys.stdout,extract_barcodes=[]):
 		"""
 		Function : Parses the records in an Illumina FASTQ file and stores all records or only those having specific barcodes.
-							 The sequence and quality strings of each FASTQ record are stored in a list of lists of the form
-																		[ ["ACGT","#AAF"], ["GGAT"," #AAA"] ... ] 
-							 where each sublist stores the sequence followed by the quality. 
+							 The sequence ID, sequence, and quality strings of each FASTQ record are stored in a list of lists of the form
+																		[ ["seqidA", "ACGT","#AAF"], ["seqidB", "GGAT"," #AAA"] ... ] 
 							 This list of lists is stored as self.data. A lookup table (dict) is also stored as self.lookup. It is of the form 
 																		{ "seqid_x": index_x, "seqid_y": index_y, ... }
 							 where an index gives the position in the list of the record with the given sequence ID. The sequence ID is stored
 							 as the entire title line of a FASTQ record.
+
+               Also supports indexing the returned instance object using the header line of a given sequence, i.e. 
+               if @GADGET:77:HFNLTBBXX:8:1101:30462:1279 1:N:0:NNAGCA is the read ID of a record that is present in a FASTQ file 
+               named reads.fq, then the following returns True:
+                   
+                   data = FastqParse("reads.fq")
+                   data["@GADGET:77:HFNLTBBXX:8:1101:30462:1279 1:N:0:NNAGCA"] #returns True
+                   
+
 		Args     : fastq - The FASTQ file to be parsed. Accepts uncompressed or gzip compressed with a .gz extension.
 							 log - file handle for logging. Defaults to sys.stdout.
 							 extract_barcodes - list of one or more barcodes to extract from the FASTQ file. If the barcode is duel-indexed, separate
@@ -86,6 +95,9 @@ class FastqParse:
 	@classmethod
 	def formatRecordForOutput(cls,record):
 		return "\n".join([record[FastqParse.SEQID_KEY],record[FastqParse.SEQ_KEY],"+",record[FastqParse.QUAL_KEY]]) + "\n"
+
+	def printRecord(self,seqid,outfh):
+		outfh.write(FastqParse.formatRecordForOutput(self.getRecord(seqid)))
 
 	@classmethod 
 	def parseIlluminaFastqAttLine(cls,attLine):
@@ -149,10 +161,23 @@ class FastqParse:
 		fh.close()
 		self.log.write("Finished parsing " + self.fastqFile + "\n")
 		self.log.flush()
+	
+	def __getitem__(self,seqid):
+		try:
+			self.getRecord(seqid)
+		except KeyError:
+			return False
+		return True
+		
 
 	def getRecord(self,title_line):
 		rec = self.data[self.lookup[hash(title_line)]]
 		return self._formatRecord(rec)
+
+	def isForwardRead(self,seqid):
+		if seqid.split()[1].startswith("1"):
+			return True
+		return False
 
 	def _formatRecord(self,rec):
 		"""
