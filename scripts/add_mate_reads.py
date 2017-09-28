@@ -12,7 +12,6 @@ import sys
 import datetime
 import gzip
 from argparse import ArgumentParser
-import pdb
 
 from illumina_fastq.illumina_fastq_parse import FastqParse
 
@@ -46,7 +45,6 @@ fout_r = open(args.outfile_r,'w')
 for rec in query:
 	seqid = rec[FastqParse.SEQID_KEY]
 	mateid = query.get_pairedend_read_id(seqid)
-	#pdb.set_trace()
   #check if mate is already in the query file
 	if query[mateid]:
 		continue

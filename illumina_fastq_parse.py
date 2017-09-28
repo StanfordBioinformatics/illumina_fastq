@@ -9,7 +9,7 @@ import sys
 import os
 import datetime
 import gzip
-from memory_profiler import profile
+#from memory_profiler import profile
 
 
 
