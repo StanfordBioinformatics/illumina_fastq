@@ -12,6 +12,7 @@ import sys
 import datetime
 import gzip
 from argparse import ArgumentParser
+import pdb
 
 from illumina_fastq.illumina_fastq_parse import FastqParse
 
@@ -20,7 +21,7 @@ GZIP_EXT = ".gz"
 R1 = "R1"
 R2 = "R2"
 
-description ="Say you have a foward read and you want to fetch its corresponding paired-end read. This script does just that, in batch. You provide a FASTQ file containing a subset of forward and reverse reads (or either thereof), and it extracts the corresponding mates from the parent FASTQ files. A new pair of FASTQ files will be written (forwards reads and reverse reads files), sorted by query-name. This only works for Illumina formatted reads (with regard to the header lines)."
+description ="Say you have a foward read and you want to fetch its corresponding paired-end read. This script does just that, in batch. You provide a FASTQ file containing a subset of forward and reverse reads (or either thereof), and this script extracts the corresponding mates from the parent FASTQ files. A new pair of FASTQ files will be written (forwards reads and reverse reads files), sorted by query-name. This only works for Illumina formatted reads (with regard to the header lines)."
 
 parser = ArgumentParser(description=description)
 parser.add_argument("-q","--query-reads",required=True,help="The FASTQ file containing forward, reverse, or a mix of forward and reverse reads whose mates need to be also fetched.")
@@ -44,20 +45,17 @@ fout_r = open(args.outfile_r,'w')
 
 for rec in query:
 	seqid = rec[FastqParse.SEQID_KEY]
-	mateid = get_pairedend_read_id(seqid)
+	mateid = query.get_pairedend_read_id(seqid)
+	#pdb.set_trace()
   #check if mate is already in the query file
 	if query[mateid]:
 		continue
-  if query.isForwardRead(seqid):
+	if query.isForwardRead(seqid):
 		query.printRecord(seqid,fout_f)
-		query.printRecord(mateid,fout_r)
+		r2.printRecord(mateid,fout_r)
 	else:
 		query.printRecord(seqid,fout_r)
-		query.printRecord(mateid,fout_f)
+		r1.printRecord(mateid,fout_f)
 
 fout_f.close()
 fout_r.close()
-
-query.close()
-r1.close()
-r2.close()
