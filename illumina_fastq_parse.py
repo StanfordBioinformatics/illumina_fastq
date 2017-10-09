@@ -41,7 +41,7 @@ class FastqParse:
 	SEQ_IDX = 1
 	QUAL_IDX = 2
 
-	def __init__(self,fastq,log=sys.stdout,extract_barcodes=[]):
+	def __init__(self,fastq,log=sys.stdout,extract_barcodes=[],sample_size=False):
 		"""
 		Function : Parses the records in an Illumina FASTQ file and stores all records or only those having specific barcodes.
 							 The sequence ID, sequence, and quality strings of each FASTQ record are stored in a list of lists of the form
@@ -63,15 +63,28 @@ class FastqParse:
 							 log - file handle for logging. Defaults to sys.stdout.
 							 extract_barcodes - list of one or more barcodes to extract from the FASTQ file. If the barcode is duel-indexed, separate
 							     them with a '+', i.e. 'ATCGGT+GCAGCT', as this is how it is written in the FASTQ file. 
+							 sample_size - int. indicating the number of records from the start of the FASTQ file to parse. A Falsy 
+									 value (the deefault)  means that the entire FASTQ file will be parsed. 
 		"""
 		self.fastqFile = fastq
 		self.barcodes = extract_barcodes
+		self.sample_size = sample_size
 		self.log = log
 		self._parse() #sets self.data
 									#sets self.lookup.
 
 	def __iter__(self):
 		return _FastqParseIter(self)
+
+	def __getitem__(self,seqid):
+		try:
+			self.getRecord(seqid)
+		except KeyError:
+			return False
+		return True
+
+	def __len__(self):
+		return len(self.lookup)
 
 	@classmethod
 	def get_pairedend_read_id(cls,read_id):
@@ -154,6 +167,8 @@ class FastqParse:
 						if hash_id in self.lookup:
 							raise Exception("Found multiple entires for the FASTQ record having title line '{uid}'.".format(uid=uid))
 						self.lookup[hash_id] = len(self.data) - 1
+						if self.sample_size and len(self.lookup) >= self.sample_size:
+							break
 				count = 0
 			if lineCount % 1000000 == 0:
 				self.log.write(str(datetime.datetime.now()) + ":  " + str(lineCount) + "\n")
@@ -162,14 +177,6 @@ class FastqParse:
 		self.log.write("Finished parsing " + self.fastqFile + "\n")
 		self.log.flush()
 	
-	def __getitem__(self,seqid):
-		try:
-			self.getRecord(seqid)
-		except KeyError:
-			return False
-		return True
-		
-
 	def getRecord(self,title_line):
 		rec = self.data[self.lookup[hash(title_line)]]
 		return self._formatRecord(rec)
@@ -185,6 +192,17 @@ class FastqParse:
 		Args : rec - A sublist from self.data.
 		"""
 		return { FastqParse.SEQID_KEY: rec[FastqParse.SEQID_IDX], FastqParse.SEQ_KEY: rec[FastqParse.SEQ_IDX], FastqParse.QUAL_KEY: rec[FastqParse.QUAL_IDX] }
+
+	def barcodeHist(self):
+		bcDico = {}
+		count = 0 
+		for rec in self:
+			att_line = FastqParse.parseIlluminaFastqAttLine(rec[FastqParse.SEQID_KEY])
+			barcode = att_line["barcode"]
+			if barcode not in bcDico:
+				bcDico[barcode] = 0 
+			bcDico[barcode] += 1
+		return bcDico
 	
 #Total number of lines in SCGPM_MD-DNA-1_HFTH3_L3_unmatched_R1.fastq is 347,060,820.
 
