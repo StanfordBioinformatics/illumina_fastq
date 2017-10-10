@@ -11,7 +11,7 @@ import os
 import unittest
 import gzip
 
-from illumina_fastq.illumina_fastq_parse import FastqParse
+import illumina_fastq.utils as fastq_utils
 
 R1 = "INPUT/reads1.fastq"
 R2 = "INPUT/reads2.fastq"

@@ -96,14 +96,7 @@ class FastqParse:
 		Example  : Setting read_id to "@COOPER:74:HFTH3BBXX:3:1101:29894:1033 1:N:0:NATGAATC+NGATCTCG" will return 
 							     @COOPER:74:HFTH3BBXX:3:1101:29894:1033 2:N:0:NATGAATC+NGATCTCG
 		"""
-		part1, part2 = read_id.strip().split()
-		if part2.startswith("1"):
-			part2 = part2.replace("1","2",1)
-		elif part2.startswith("2"):
-			part2 = part2.replace("2","1",1)
-		else:
-			raise Exception("Unknown read number in {title}".format(title=read_id))
-		return part1 + " " + part2
+		return utils.get_pairedend_read_id(read_id)
 
 	@classmethod
 	def formatRecordForOutput(cls,record):
@@ -116,22 +109,7 @@ class FastqParse:
 	def parseIlluminaFastqAttLine(cls,attLine):
 		#Illumina FASTQ Att line format (as of CASAVA 1.8 at least):
 		#  @<instrument-name>:<run ID>:<flowcell ID>:<lane>:<tile>:<x-pos>:<y-pos> <read number>:<is filtered>:<control number>:<barcode sequence>
-		uid = attLine.strip()
-		header = uid.lstrip("@").split(":")
-		dico = {}
-		dico["instrument"] = header[0]
-		dico["runId"] = header[1]
-		dico["flowcellId"] = header[2]
-		dico["lane"] = header[3]
-		dico["tile"] = header[4]
-		dico["xpos"] = header[5]
-		ypos,readNumber = header[6].split()
-		dico["ypos"] = ypos
-		dico["readNumber"] = readNumber
-		dico["isFiltered"] = header[7]
-		dico["control"] = header[8]
-		dico["barcode"] = header[9]
-		return dico	
+		return utils.parseIlluminaFastqAttLine(attLine)
 
 	#@profile #used for memory_profiler
 	def _parse(self):
@@ -171,6 +149,7 @@ class FastqParse:
 							break
 				count = 0
 			if lineCount % 1000000 == 0:
+				#every million lines
 				self.log.write(str(datetime.datetime.now()) + ":  " + str(lineCount) + "\n")
 				self.log.flush()
 		fh.close()
@@ -183,9 +162,7 @@ class FastqParse:
 
 	@classmethod
 	def isForwardRead(cls,seqid):
-		if seqid.split()[1].startswith("1"):
-			return True
-		return False
+		return utils.isForwardRead(seqid)
 
 	def _formatRecord(self,rec):
 		"""
