@@ -11,7 +11,6 @@ import os
 import sys
 import datetime
 import gzip
-import subprocess
 from argparse import ArgumentParser
 
 import illumina_fastq.utils as fastq_utils
@@ -25,7 +24,7 @@ parser.add_argument("--outdir",help="The pre-existing directory to output the FA
 parser.add_argument("--outfile-prefix",required=True,help="The file prefix of each output FASTQ file for a given barcode. The barcode name will be appended to this prefix, as well as the read number. For example, setting the outfile prefix to 'output' would result in 'output_${barcode}_R1.fastq' and 'output_${barcode}_R2.fastq'.")
 parser.add_argument("-b","--barcodes",nargs="+",help="One or more barcodes to extract from the input FASTQ file(s).")
 
-FASTQ_EXT =  ".fastq"
+GZIP_FASTQ_EXT =  ".fastq.gz"
 R1 = "R1"
 R2 = "R2"
 
@@ -58,9 +57,9 @@ file_handles = {}
 for barcode in barcodes:
 	file_handles[barcode] = {}
 	outfile_name = os.path.join(outdir,outfile_prefix + "_" + barcode.replace("+","-"))
-	outfile_name += "_" + R1 + FASTQ_EXT
-	file_handles[barcode][R1] = open(outfile_name,"w")
-	file_handles[barcode][R2] = open(outfile_name.replace(R1,R2),"w")
+	outfile_name += "_" + R1 + GZIP_FASTQ_EXT
+	file_handles[barcode][R1] = gzip.open(outfile_name,"wb")
+	file_handles[barcode][R2] = gzip.open(outfile_name.replace(R1,R2),"wb")
 
 output_barcode_counts = {}
 for barcode in barcodes:
@@ -106,14 +105,15 @@ for barcode in output_barcode_counts:
 print("\n")
 sys.stdout.flush()
 
-print("Compressing output files with gzip")
-sys.stdout.flush()
-for i in to_compress:
-	cmd = "gzip {i}".format(i=i)
-	print("Compressing {i} with command '{cmd}'.".format(i=i,cmd=cmd))
-	sys.stdout.flush()
-	popen = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-	stdout,stderr = popen.communicate()
-	retcode = popen.returncode
-	if retcode:
-		raise Exception("Failed to compress {i}. Stderr is '{stderr}'.".format(i=i,stderr=stderr))	
+#print("Compressing output files with gzip")
+#sys.stdout.flush()
+
+#for i in to_compress:
+#	cmd = "gzip {i}".format(i=i)
+#	print("Compressing {i} with command '{cmd}'.".format(i=i,cmd=cmd))
+#	sys.stdout.flush()
+#	popen = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+#	stdout,stderr = popen.communicate()
+#	retcode = popen.returncode
+#	if retcode:
+#		raise Exception("Failed to compress {i}. Stderr is '{stderr}'.".format(i=i,stderr=stderr))	
