@@ -15,12 +15,13 @@ import os
 import unittest
 import gzip
 
+import illumina_fastq.tests.test_extract_barcodes as testdir
 import illumina_fastq.utils as fastq_utils
 
-R1 = "INPUT/reads1.fastq"
-R2 = "INPUT/reads2.fastq"
-R1_OUTFILE = "forward_extract_3.fastq"
-R2_OUTFILE = "reverse_extract_3.fastq"
+R1 = os.path.join(testdir.DATA_DIR,"INPUT/reads1.fastq")
+R2 = os.path.join(testdir.DATA_DIR,"INPUT/reads2.fastq")
+R1_OUTFILE = os.path.join(testdir.OUT_DIR,"forward_extract_3.fastq")
+R2_OUTFILE = os.path.join(testdir.OUT_DIR,"reverse_extract_3.fastq")
 
 if not os.path.exists(R1):
     raise Exception("Missing test input file {}".format(R1))
@@ -32,7 +33,7 @@ if os.path.exists(R1_OUTFILE):
 if os.path.exists(R2_OUTFILE):
     os.remove(R2_OUTFILE)
 
-
+outdir = testdir.OUT_DIR
 class TestBarcodeExtract(unittest.TestCase):
     def setUp(self):
         """
@@ -40,13 +41,11 @@ class TestBarcodeExtract(unittest.TestCase):
         all contain unique barcodes.
         """
 
-        self.outdir = os.path.join(os.path.dirname(__file__), "OUTPUT")
-
     def test_GTTACACT_GGATCTCG(self):
         """
         Barcode GTTACACT+GGATCTCG appears twice in the inputs.
         """
-        outfile_prefix = os.path.join(self.outdir, "paired_end")
+        outfile_prefix = os.path.join(outdir, "paired_end")
 
         r1_output_name = outfile_prefix + "_GTTACACT-GGATCTCG_R1.fastq.gz"
         if os.path.exists(r1_output_name):

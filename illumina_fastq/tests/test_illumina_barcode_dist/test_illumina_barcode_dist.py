@@ -14,10 +14,12 @@ import subprocess
 import os
 import unittest
 
+import illumina_fastq.tests.test_illumina_barcode_dist as testdir
 from illumina_fastq.illumina_fastq_parse import FastqParse
 
 R1 = "INPUT/reads1.fastq"
-OUTFILE = "bcdist.txt"
+OUTDIR = testdir.OUT_DIR
+OUTFILE = os.path.join(OUTDIR,"bcdist.txt")
 
 if not os.path.exists(R1):
     raise Exception("Missing test input file {}".format(R1))

@@ -14,10 +14,11 @@ import subprocess
 import os
 import unittest
 
+import illumina_fastq.tests.test_add_made_reads as testdir
 from illumina_fastq.illumina_fastq_parse import FastqParse
 
-R1 = os.path.join(reads1.fastq"
-R2 = "INPUT/reads2.fastq"
+R1 = os.path.join(testdir.DATA_DIR,"reads1.fastq")
+R2 = os.path.join(testdir.DATA_DIR,"INPUT/reads2.fastq")
 
 if not os.path.exists(R1):
     raise Exception("Missing test input file {}".format(R1))
@@ -39,8 +40,8 @@ class TestOutputContainsQueries(unittest.TestCase):
         self.query_fid2 = "@COOPER:74:HFTH3BBXX:3:1101:29833:1033 1:N:0:NAGATTCC+NAGCTATA"
         self.query_rid1 = "@COOPER:74:HFTH3BBXX:3:1101:1052:1033 2:N:0:NTTACACT+NGATCTCG"
         self.query_rid2 = "@COOPER:74:HFTH3BBXX:3:1101:29833:1033 2:N:0:NAGATTCC+NAGCTATA"
-        self.fout_name = "forward_extract.fastq"
-        self.rout_name = "reverse_extract.fastq"
+        self.fout_name = os.path.join(testdir.OUT_DIR,"forward_extract.fastq")
+        self.rout_name = os.path.join(testdir.OUT_DIR,"reverse_extract.fastq")
         if os.path.exists(self.fout_name):
             os.remove(self.fout_name)
         if os.path.exists(self.rout_name):
@@ -82,8 +83,8 @@ class TestOutputContainsQueries_2(unittest.TestCase):
         self.query_fid2 = "@COOPER:74:HFTH3BBXX:3:1101:29833:1033 1:N:0:NAGATTCC+NAGCTATA"
         self.query_rid1 = "@COOPER:74:HFTH3BBXX:3:1101:1052:1033 2:N:0:NTTACACT+NGATCTCG"
         self.query_rid2 = "@COOPER:74:HFTH3BBXX:3:1101:29833:1033 2:N:0:NAGATTCC+NAGCTATA"
-        self.fout_name = "forward_extract_2.fastq"
-        self.rout_name = "reverse_extract_2.fastq"
+        self.fout_name = os.path.join(testdir.OUT_DIR,"forward_extract_2.fastq")
+        self.rout_name = os.path.join(testdir.OUT_DIR,"reverse_extract_2.fastq")
         if os.path.exists(self.fout_name):
             os.remove(self.fout_name)
         if os.path.exists(self.rout_name):
@@ -121,8 +122,8 @@ class TestOutputContainsQueries_3(unittest.TestCase):
         query = "query_notpresent.fastq"
         self.query_fid1 = "@COOPER:74:HFTH3BBXX:3:1101:29833:1033 1:N:0:NAGATTCC+NAGCTATA"
         self.query_rid1 = "@COOPER:74:HFTH3BBXX:3:1101:29833:1033 2:N:0:NAGATTCC+NAGCTATA"
-        self.fout_name = "forward_extract_3.fastq"
-        self.rout_name = "reverse_extract_3.fastq"
+        self.fout_name = os.path.join(testdir.OUT_DIR,"forward_extract_3.fastq")
+        self.rout_name = os.path.join(testdir.OUT_DIR,"reverse_extract_3.fastq")
         if os.path.exists(self.fout_name):
             os.remove(self.fout_name)
         if os.path.exists(self.rout_name):
