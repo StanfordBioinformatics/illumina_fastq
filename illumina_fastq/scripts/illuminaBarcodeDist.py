@@ -10,18 +10,6 @@
 
 # Created Feb 7, 2014
 
-import sys
-import operator
-import argparse
-import os
-import glob
-import subprocess
-import gzip
-
-from illumina_fastq.illumina_fastq_parse import FastqParse
-
-DEFAULT_SAMPLE_SIZE = 100000
-
 """
 Given a FASTQ file containing unmatched reads, tabulates the frequencies at which each barcode is 
 present. The first line of each FASTQ record must be in the standard Illumina format:
@@ -34,10 +22,20 @@ where anything in [] is optional. The output file will have 3 tab-delimite field
 |
 """
 
+import sys
+import operator
+import argparse
+import os
+import glob
+import subprocess
+import gzip
+
+from illumina_fastq.illumina_fastq_parse import FastqParse
+
+DEFAULT_SAMPLE_SIZE = 100000
+
 def get_parser():
-    parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawTextHelpFormatter)
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument(
         '-i',
         '--infile',
