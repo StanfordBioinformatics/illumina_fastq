@@ -12,6 +12,7 @@
 import datetime
 import gzip
 import os
+import pdb
 import sys
 #from memory_profiler import profile
 
@@ -40,36 +41,36 @@ class _FastqParseIter:
 
 class FastqParse:
     """
-    Parses the records in an Illumina FASTQ file and stores all records or only those having 
-    specific barcodes. The sequence ID, sequence, and quality strings of each FASTQ record are 
-    stored in a list of lists of the form 
- 
+    Parses the records in an Illumina FASTQ file and stores all records or only those having
+    specific barcodes. The sequence ID, sequence, and quality strings of each FASTQ record are
+    stored in a list of lists of the form
+
         [ ["seqidA", "ACGT","#AAF"], ["seqidB", "GGAT"," #AAA"] ... ]
 
-    This list of lists is stored as self.data. A lookup table (dict) is also stored as 
+    This list of lists is stored as self.data. A lookup table (dict) is also stored as
     self.lookup. It is of the form
-                                                                                                                                    
+
         { "seqidA": indexA, "seqidB": indexB, ... }
 
-    where an index gives the position in the list of the record with the given sequence ID. 
+    where an index gives the position in the list of the record with the given sequence ID.
     The sequence ID is stored as the entire title line of a FASTQ record, minus any peripheral whitespace.
 
     Also supports indexing the returned instance object using the header line of a given sequence, i.e.
     if @GADGET:77:HFNLTBBXX:8:1101:30462:1279 1:N:0:NNAGCA is the read ID of a record that is present in a FASTQ file
     named reads.fq, then the following returns True:
 
-       data = FastqParse("reads.fq")
-       data["@GADGET:77:HFNLTBBXX:8:1101:30462:1279 1:N:0:NNAGCA"] #returns True
+        data = FastqParse("reads.fq")
+        data["@GADGET:77:HFNLTBBXX:8:1101:30462:1279 1:N:0:NNAGCA"] #returns True
 
 
-    Args: 
-        fastq: `str. Path to the FASTQ file to be parsed. Accepts uncompressed or gzip 
-            compressed with a .gz extension. 
+    Args:
+        fastq: `str`. Path to the FASTQ file to be parsed. Accepts uncompressed or gzip
+            compressed with a .gz extension.
         log: A file handle for logging. Defaults to STDOUT.
-        extract_barcodes: `list` of one or more barcodes to extract from the FASTQ file. 
-            If the barcode is duel-indexed, separate with a '+', i.e. 'ATCGGT+GCAGCT', 
-            as this is how it is written in the FASTQ file.  
-        sample_size: `int`. Indicates the number of records from the start of the FASTQ file to 
+        extract_barcodes: `list` of one or more barcodes to extract from the FASTQ file.
+            If the barcode is duel-indexed, separate with a '+', i.e. 'ATCGGT+GCAGCT',
+            as this is how it is written in the FASTQ file.
+        sample_size: `int`. Indicates the number of records from the start of the FASTQ file to
             parse. A Falsy value (the default) means that the entire FASTQ file will be parsed.
     """
 
@@ -95,11 +96,7 @@ class FastqParse:
         return _FastqParseIter(self)
 
     def __getitem__(self, seqid):
-        try:
-            self.isRecordPresent(seqid)
-        except KeyError:
-            return False
-        return True
+        return self.isRecordPresent(seqid)
 
     def __len__(self):
         return len(self.lookup)
@@ -107,11 +104,11 @@ class FastqParse:
     @classmethod
     def getPairedendReadId(cls, read_id):
         """
-        Given either a forward read or reverse read identifier, returns the corresponding paired-end 
+        Given either a forward read or reverse read identifier, returns the corresponding paired-end
         read identifier.
 
-        Args: 
-            read_id: `str`. The forward read or reverse read identifier. This should be the 
+        Args:
+            read_id: `str`. The forward read or reverse read identifier. This should be the
                 entire title line of a FASTQ record, minus any trailing whitespace.
         Returns:
             `str`: The paired-end read identifier (title line).
@@ -182,7 +179,7 @@ class FastqParse:
         self.log.write("Finished parsing " + self.fastqFile + "\n")
         self.log.flush()
 
-    def isRecordPresent(self,title_line):
+    def isRecordPresent(self, title_line):
         if hash(title_line) in self.lookup:
             return True
         return False

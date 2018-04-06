@@ -25,22 +25,23 @@ def parseIlluminaFastqAttLine(attLine):
 
       @<instrument-name>:<run ID>:<flowcell ID>:<lane>:<tile>:<x-pos>:<y-pos> <read number>:<is filtered>:<control number>:<barcode sequence>
 
-    Args: 
+    Args:
         attLine: `str`. The title line of a FASTQ record, minus any trailing whitespace.
     Returns:
         `dict`. The keys are:
-         
-          1. instrument,
-          2. runId,
-          3. flowcellId,
-          4. lane,
-          5. tile,
-          6. xpos,
-          7. ypos,
-          8. readNumber,
-          9. isFiltered,
-         10. control,
-         11. barcode
+
+        1. instrument,
+        2. runId,
+        3. flowcellId,
+        4. lane,
+        5. tile,
+        6. xpos,
+        7. ypos,
+        8. readNumber,
+        9. isFiltered,
+       10. control,
+       11. barcode
+
     """
     uid = attLine.strip()
     header = uid.lstrip("@").split(":")

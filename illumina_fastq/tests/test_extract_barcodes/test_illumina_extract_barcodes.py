@@ -18,8 +18,9 @@ import gzip
 import illumina_fastq.tests.test_extract_barcodes as testdir
 import illumina_fastq.utils as fastq_utils
 
-R1 = os.path.join(testdir.DATA_DIR,"INPUT/reads1.fastq")
-R2 = os.path.join(testdir.DATA_DIR,"INPUT/reads2.fastq")
+DATA_DIR = testdir.DATA_DIR
+R1 = os.path.join(DATA_DIR,"reads1.fastq")
+R2 = os.path.join(DATA_DIR,"reads2.fastq")
 R1_OUTFILE = os.path.join(testdir.OUT_DIR,"forward_extract_3.fastq")
 R2_OUTFILE = os.path.join(testdir.OUT_DIR,"reverse_extract_3.fastq")
 

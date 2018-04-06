@@ -17,7 +17,8 @@ import unittest
 import illumina_fastq.tests.test_illumina_barcode_dist as testdir
 from illumina_fastq.illumina_fastq_parse import FastqParse
 
-R1 = "INPUT/reads1.fastq"
+DATA_DIR = testdir.DATA_DIR
+R1 = os.path.join(DATA_DIR,"reads1.fastq")
 OUTDIR = testdir.OUT_DIR
 OUTFILE = os.path.join(OUTDIR,"bcdist.txt")
 

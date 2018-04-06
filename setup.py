@@ -29,5 +29,5 @@ setup(
   packages = find_packages(),
   install_requires = [],
   scripts = scripts,
-  package_data = {"encode_utils": ["tests/data/*"]}
+  package_data = {"illumina_fastq": ["tests/test*/Input/*"]}
 )

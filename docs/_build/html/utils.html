@@ -1,0 +1,183 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>illumina_fastq.utils &#8212; illumina_fastq 1.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="illumina_fastq.illumina_fastq_parse" href="illumina_fastq_parse.html" />
+    <link rel="prev" title="illuminaBarcodeDist.py" href="scripts/illuminaBarcodeDist.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-illumina_fastq.utils">
+<span id="illumina-fastq-utils"></span><h1>illumina_fastq.utils<a class="headerlink" href="#module-illumina_fastq.utils" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="illumina_fastq.utils.getPairedendReadId">
+<code class="descclassname">illumina_fastq.utils.</code><code class="descname">getPairedendReadId</code><span class="sig-paren">(</span><em>read_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/illumina_fastq/utils.html#getPairedendReadId"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#illumina_fastq.utils.getPairedendReadId" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given either a forward read or reverse read identifier, returns the corresponding paired-end
+read identifier.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>read_id</strong> – <cite>str</cite>. The forward read or reverse read identifier. This should be the entire
+title line of a FASTQ record, minus any trailing whitespace.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The pairend-end read identifier (title line).</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><cite>str</cite></td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<p>Setting read_id to “&#64;COOPER:74:HFTH3BBXX:3:1101:29894:1033 1:N:0:NATGAATC+NGATCTCG” will return
+&#64;COOPER:74:HFTH3BBXX:3:1101:29894:1033 2:N:0:NATGAATC+NGATCTCG</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="illumina_fastq.utils.isForwardRead">
+<code class="descclassname">illumina_fastq.utils.</code><code class="descname">isForwardRead</code><span class="sig-paren">(</span><em>seqid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/illumina_fastq/utils.html#isForwardRead"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#illumina_fastq.utils.isForwardRead" title="Permalink to this definition">¶</a></dt>
+<dd><p>Indicates whether the passed-in read identifier is a forward or reverse read identifier.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>seqid</strong> – <cite>str</cite>. A read identifier of a FASTQ record.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">True if a forward read identifier, False otherwise.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><cite>bool</cite></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="illumina_fastq.utils.parseIlluminaFastqAttLine">
+<code class="descclassname">illumina_fastq.utils.</code><code class="descname">parseIlluminaFastqAttLine</code><span class="sig-paren">(</span><em>attLine</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/illumina_fastq/utils.html#parseIlluminaFastqAttLine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#illumina_fastq.utils.parseIlluminaFastqAttLine" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given the title line of a FASTQ record, tonizes the line and stores the tokens in a dict.
+The Illumina FASTQ Att line format (as of CASAVA 1.8 at least) is:</p>
+<blockquote>
+<div>&#64;&lt;instrument-name&gt;:&lt;run ID&gt;:&lt;flowcell ID&gt;:&lt;lane&gt;:&lt;tile&gt;:&lt;x-pos&gt;:&lt;y-pos&gt; &lt;read number&gt;:&lt;is filtered&gt;:&lt;control number&gt;:&lt;barcode sequence&gt;</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>attLine</strong> – <cite>str</cite>. The title line of a FASTQ record, minus any trailing whitespace.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><ol class="arabic simple">
+<li>instrument,</li>
+<li>runId,</li>
+<li>flowcellId,</li>
+<li>lane,</li>
+<li>tile,</li>
+<li>xpos,</li>
+<li>ypos,</li>
+<li>readNumber,</li>
+<li>isFiltered,</li>
+</ol>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><cite>dict</cite>. The keys are<ol class="arabic simple" start="10">
+<li>control,</li>
+<li>barcode</li>
+</ol>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="illumina_fastq.utils.yieldRecs">
+<code class="descclassname">illumina_fastq.utils.</code><code class="descname">yieldRecs</code><span class="sig-paren">(</span><em>fastqFile</em>, <em>log=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w'&gt;</em>, <em>barcodes=[]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/illumina_fastq/utils.html#yieldRecs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#illumina_fastq.utils.yieldRecs" title="Permalink to this definition">¶</a></dt>
+<dd><p>A generator function that reads a FASTQ file and yields records, one at a time.
+The records to yield can be restricted to the specified set of barcodes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fastqFile</strong> – <cite>str</cite>. Path to the FASTQ file to parse.</li>
+<li><strong>log</strong> – A file handle to write log messages to. Defaults to STDOUT.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Yields:</th><td class="field-body"><p class="first last">A list containing one element per line of a FASTQ record. Each element is whitespace stripped.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="scripts/illuminaBarcodeDist.html" title="previous chapter">illuminaBarcodeDist.py</a></li>
+      <li>Next: <a href="illumina_fastq_parse.html" title="next chapter">illumina_fastq.illumina_fastq_parse</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Nathaniel Watson.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/utils.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

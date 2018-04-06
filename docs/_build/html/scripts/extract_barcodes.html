@@ -1,0 +1,135 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>extract_barcodes.py &#8212; illumina_fastq 1.0.0 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="illuminaBarcodeDist.py" href="illuminaBarcodeDist.html" />
+    <link rel="prev" title="add_mate_reads.py" href="add_mate_reads.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="extract-barcodes-py">
+<h1>extract_barcodes.py<a class="headerlink" href="#extract-barcodes-py" title="Permalink to this headline">¶</a></h1>
+<p><p>Extracts FASTQ records matching the specified barcodes from a pair of unmatched read FASTQ files. 
+For each specified barcode, records matching the barcode will be written to a new pair of FASTQ 
+files. All output files are compressed with gzip. It is expected that both input FASTQ files 
+(the forward and reverse read files) are sorted by read name and that their aren’t any missing 
+mates, otherwise an Exception will be raised.</p>
+<div class="line-block">
+<div class="line"><br /></div>
+</div>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">extract_barcodes</span><span class="o">.</span><span class="n">py</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">--</span><span class="n">r1</span> <span class="n">R1</span> <span class="o">--</span><span class="n">r2</span> <span class="n">R2</span> <span class="p">[</span><span class="o">--</span><span class="n">outdir</span> <span class="n">OUTDIR</span><span class="p">]</span>
+                           <span class="o">--</span><span class="n">outfile</span><span class="o">-</span><span class="n">prefix</span> <span class="n">OUTFILE_PREFIX</span>
+                           <span class="p">[</span><span class="o">-</span><span class="n">b</span> <span class="n">BARCODES</span> <span class="p">[</span><span class="n">BARCODES</span> <span class="o">...</span><span class="p">]]</span>
+</pre></div>
+</div>
+<div class="section" id="Named Arguments">
+<h2>Named Arguments<a class="headerlink" href="#Named Arguments" title="Permalink to this headline">¶</a></h2>
+<table class="docutils option-list" frame="void" rules="none">
+<col class="option" />
+<col class="description" />
+<tbody valign="top">
+<tr><td class="option-group">
+<kbd>--r1</kbd></td>
+<td><blockquote class="first last">
+<div>FASTQ file containing the (forward) reads.</div></blockquote>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--r2</kbd></td>
+<td><blockquote class="first last">
+<div>FASTQ file containing the reverse reads.</div></blockquote>
+</td></tr>
+<tr><td class="option-group">
+<kbd>--outdir</kbd></td>
+<td><blockquote class="first last">
+<div>The pre-existing directory to output the FASTQ files containing the extracted barcodes. Defaults to the current working directory.</div></blockquote>
+</td></tr>
+<tr><td class="option-group" colspan="2">
+<kbd>--outfile-prefix</kbd></td>
+</tr>
+<tr><td>&#160;</td><td><blockquote class="first last">
+<div>The file prefix of each output FASTQ file for a given barcode. The barcode name will be
+appended to this prefix, as well as the read number. For example, setting the outfile prefix
+to ‘output’ would result in ‘output_${barcode}_R1.fastq’ and ‘output_${barcode}_R2.fastq’.</div></blockquote>
+</td></tr>
+<tr><td class="option-group">
+<kbd>-b, --barcodes</kbd></td>
+<td><blockquote class="first last">
+<div>One or more barcodes to extract from the input FASTQ file(s).</div></blockquote>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="add_mate_reads.html" title="previous chapter">add_mate_reads.py</a></li>
+      <li>Next: <a href="illuminaBarcodeDist.html" title="next chapter">illuminaBarcodeDist.py</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Nathaniel Watson.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.7.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/scripts/extract_barcodes.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
