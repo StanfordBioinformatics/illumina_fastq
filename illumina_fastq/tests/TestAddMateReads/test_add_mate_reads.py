@@ -16,7 +16,7 @@ import unittest
 
 from illumina_fastq.illumina_fastq_parse import FastqParse
 
-R1 = "INPUT/reads1.fastq"
+R1 = os.path.join(reads1.fastq"
 R2 = "INPUT/reads2.fastq"
 
 if not os.path.exists(R1):

@@ -1,2 +1,2 @@
 *.pyc
-scripts/Test/TEST_EXTRACT_BARCODES/OUTPUT
+illumina_fastq/tests/TEST_EXTRACT_BARCODES/
