@@ -5,9 +5,12 @@ Contains a module for parsing a FASTQ file and several scripts based upon it. Th
 #### illuminaBarcodeDist.py
 Tabulates the relative frequences of barcodes seen in the unmatched reads. This is useful when you have a lot of unmatched reads and need to see what is present. 
 
+There is a Docker image for this at https://hub.docker.com/r/nathankw/illumina_barcode_dist. 
+
 #### extract_barcodes.py
 Extracts FASTQ records matching the specified barcodes from the unmatched read FASTQ file or pair of FASTQ files if paired-end sequencing.
 
+There is a Docker image for this at https://hub.docker.com/r/nathankw/illumina_extract_barcodes. 
 #### add_mate_reads.py
 Fetches the other read in a pair for each record in the query FASTQ file. You also supply the parent pair of forward read and reverse read FASTQ files as the reference set of FASTQ records.
 
